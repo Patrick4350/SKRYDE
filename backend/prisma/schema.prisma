@@ -1,0 +1,206 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  school    String
+  role      UserRole @default(RIDER)
+  roleType  String   @default("Student") // Student or Faculty
+  verified  Boolean  @default(false)
+  rating    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Driver specific fields
+  vehicleInfo String?
+  licensePlate String?
+  
+  // Location fields
+  currentLatitude  Float?
+  currentLongitude Float?
+  lastLocationUpdate DateTime?
+  
+  // Relations
+  ridesAsDriver Ride[] @relation("DriverRides")
+  ridesAsRider  RideRequest[] @relation("RiderRequests")
+  offers        Offer[]
+  reviewsGiven  Review[] @relation("ReviewerReviews")
+  reviewsReceived Review[] @relation("ReviewedReviews")
+  locationPings LocationPing[] @relation("UserLocationPings")
+  notificationsReceived Notification[] @relation("RecipientNotifications")
+  notificationsSent Notification[] @relation("SenderNotifications")
+  
+  @@map("users")
+  @@index([role, verified])
+  @@index([currentLatitude, currentLongitude])
+}
+
+model Ride {
+  id          String      @id @default(cuid())
+  driverId    String
+  origin      String
+  destination String
+  departureTime DateTime
+  seats       Int
+  fare        Float
+  status      RideStatus  @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Location fields
+  originLatitude    Float?
+  originLongitude   Float?
+  destLatitude      Float?
+  destLongitude     Float?
+
+  // Fare bargaining fields
+  proposedFare   Float?
+  acceptedFare   Float?
+  bargainHistory Json?
+
+  // Relations
+  driver      User         @relation("DriverRides", fields: [driverId], references: [id])
+  requests    RideRequest[]
+  offers      Offer[]
+  
+  @@map("rides")
+  @@index([status, departureTime])
+  @@index([originLatitude, originLongitude])
+  @@index([destLatitude, destLongitude])
+}
+
+model RideRequest {
+  id        String   @id @default(cuid())
+  riderId   String
+  rideId    String?
+  maxFare   Float
+  status    RequestStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Enhanced fields for direct ride requests
+  origin      String?
+  destination String?
+  departureTime DateTime?
+  passengers Int?
+  message    String?
+  
+  // Location fields
+  originLatitude    Float?
+  originLongitude   Float?
+  destLatitude      Float?
+  destLongitude     Float?
+
+  // Relations
+  rider     User @relation("RiderRequests", fields: [riderId], references: [id])
+  ride      Ride? @relation(fields: [rideId], references: [id])
+  
+  @@map("ride_requests")
+}
+
+model Offer {
+  id        String   @id @default(cuid())
+  rideId    String
+  riderId   String
+  amount    Float
+  accepted  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  ride      Ride @relation(fields: [rideId], references: [id])
+  rider     User @relation(fields: [riderId], references: [id])
+  
+  @@map("offers")
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  reviewerId  String
+  reviewedId  String
+  rating      Int      // 1-5 stars
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  reviewer    User @relation("ReviewerReviews", fields: [reviewerId], references: [id])
+  reviewed    User @relation("ReviewedReviews", fields: [reviewedId], references: [id])
+  
+  @@map("reviews")
+}
+
+model Ad {
+  id        String   @id @default(cuid())
+  title     String
+  image     String?
+  link      String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("ads")
+}
+
+model LocationPing {
+  id        String   @id @default(cuid())
+  userId    String
+  latitude  Float
+  longitude Float
+  timestamp DateTime @default(now())
+  
+  // Relations
+  user      User @relation("UserLocationPings", fields: [userId], references: [id])
+  
+  @@map("location_pings")
+  @@index([userId, timestamp])
+  @@index([latitude, longitude])
+}
+
+enum UserRole {
+  RIDER
+  DRIVER
+  ADMIN
+}
+
+enum RideStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  recipientId String
+  senderId    String?
+  type        String   // "OFFER", "OFFER_ACCEPTED", "OFFER_REJECTED", "RIDE_REQUEST", "RIDE_CONFIRMED"
+  message     String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  recipient User @relation("RecipientNotifications", fields: [recipientId], references: [id])
+  sender    User? @relation("SenderNotifications", fields: [senderId], references: [id])
+
+  @@map("notifications")
+  @@index([recipientId, read])
+  @@index([createdAt])
+}
