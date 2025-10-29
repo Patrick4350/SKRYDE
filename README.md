@@ -278,4 +278,4 @@ For support or questions, please contact the development team or create an issue
 
 ---
 
-**Built with ❤️ for HBCU students by students**
+**Built with ❤️ for students by students**
