@@ -1,7 +1,7 @@
 {
-  "buildCommand": "npm ci --prefix backend && npm ci --prefix frontend && npx --prefix backend prisma generate && npm run build --prefix frontend",
+  "installCommand": "npm install --no-audit --no-fund --prefix backend && npm install --no-audit --no-fund --prefix frontend && npx --yes --prefix backend prisma generate",
+  "buildCommand": "npm run build --prefix frontend",
   "outputDirectory": "frontend/build",
-  
   "routes": [
     { "handle": "filesystem" },
     { "src": "^(?!/api)(.*)$", "dest": "/index.html" }
