@@ -26,8 +26,8 @@ const LocationInput: React.FC<LocationInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Get Google Maps API key from environment
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  // Get Google Maps API key from environment (Create React App style)
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
 
   // Debounced search for suggestions
   useEffect(() => {
