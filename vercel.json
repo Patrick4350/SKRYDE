@@ -1,11 +1,7 @@
 {
   "buildCommand": "npm ci --prefix backend && npm ci --prefix frontend && npx --prefix backend prisma generate && npm run build --prefix frontend",
   "outputDirectory": "frontend/build",
-  "functions": {
-    "api/**": {
-      "runtime": "nodejs22.x"
-    }
-  },
+  
   "routes": [
     { "handle": "filesystem" },
     { "src": "^(?!/api)(.*)$", "dest": "/index.html" }
