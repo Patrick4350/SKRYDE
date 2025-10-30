@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm install --no-audit --no-fund --prefix backend && npm install --no-audit --no-fund --prefix frontend && npx --yes --prefix backend prisma generate",
+  "installCommand": "npm install --no-audit --no-fund --prefix backend && npm install --no-audit --no-fund --prefix frontend && (npx --yes --prefix backend prisma migrate deploy || npx --yes --prefix backend prisma db push) && npx --yes --prefix backend prisma generate",
   "buildCommand": "npm run build --prefix frontend",
   "outputDirectory": "frontend/build",
   "routes": [
