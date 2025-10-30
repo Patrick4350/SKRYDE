@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '../generated/client';
+import { PrismaClient } from '@prisma/client';
 import { hashPassword, comparePassword, generateToken, verifyEmailDomain } from '../utils/auth';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 

@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '../generated/client';
+import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from '../middleware/auth';
 import { calculateDistance } from '../utils/geo';
 
