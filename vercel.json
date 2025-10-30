@@ -3,7 +3,7 @@
   "outputDirectory": "frontend/build",
   "functions": {
     "api/**": {
-      "runtime": "Node.js20.x"
+      "runtime": "Node.js22.x"
     }
   },
   "routes": [
