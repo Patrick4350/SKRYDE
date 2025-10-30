@@ -47,6 +47,9 @@
       "last 1 safari version"
     ]
   },
+  "engines": {
+    "node": ">=18 <20"
+  },
   "devDependencies": {
     "@types/node": "^24.9.2",
     "autoprefixer": "^10.4.21",

@@ -3,6 +3,11 @@
     { "src": "frontend/package.json", "use": "@vercel/static-build", "config": { "distDir": "build" } },
     { "src": "api/**/*.ts", "use": "@vercel/node" }
   ],
+  "functions": {
+    "api/**": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "routes": [
     { "src": "^/api/(.*)$", "dest": "api/index.ts" },
     { "src": "^(?!/api)(.*)$", "dest": "/index.html" }
